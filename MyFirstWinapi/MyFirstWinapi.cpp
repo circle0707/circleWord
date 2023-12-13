@@ -133,6 +133,13 @@ void OutFromFile(TCHAR filename[], HWND hWnd, static TCHAR *strPointer, static i
     _tfopen_s(&fPtr, filename, _T("r"));
 #endif 
     _fgetts(strPointer, 60000, fPtr);
+    {
+        int i = 0;
+        while (strPointer[i] != 0) {
+            *countPointer += 1;
+            i++;
+        }
+    }
     fclose(fPtr);
     ReleaseDC(hWnd, hdc);
 }
