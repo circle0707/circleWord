@@ -1,0 +1,7 @@
+﻿  MyFirstWinapi.cpp
+D:\c++\GIT\circleWord\MyFirstWinapi\MyFirstWinapi.cpp(121,71): warning C4042: 'strPointer': 스토리지 클래스가 잘못되었습니다.
+D:\c++\GIT\circleWord\MyFirstWinapi\MyFirstWinapi.cpp(121,97): warning C4042: 'countPointer': 스토리지 클래스가 잘못되었습니다.
+D:\c++\GIT\circleWord\MyFirstWinapi\MyFirstWinapi.cpp(258,32): warning C4244: '=': 'WPARAM'에서 'TCHAR'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\c++\GIT\circleWord\MyFirstWinapi\MyFirstWinapi.cpp(268,240): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\c++\GIT\circleWord\MyFirstWinapi\MyFirstWinapi.cpp(269,69): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  MyFirstWinapi.vcxproj -> D:\c++\GIT\circleWord\x64\Debug\MyFirstWinapi.exe

@@ -4,6 +4,9 @@
 #include "framework.h"
 #include "MyFirstWinapi.h"
 #include <tchar.h>//_T사용 위하여
+#include "resource.h"
+#include <commdlg.h>
+#include <stdio.h>
 
 #define MAX_LOADSTRING 100
 
@@ -80,6 +83,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_MYFIRSTWINAPI);
     wcex.lpszClassName  = szWindowClass;
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.lpszMenuName = MAKEINTRESOURCE(IDC_MENU);//메뉴추가
 
     return RegisterClassExW(&wcex);
 }
@@ -98,7 +102,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
-   HWND hWnd = CreateWindowW(szWindowClass, L"MCLS Word SoftWare Korean...", WS_OVERLAPPEDWINDOW,
+   HWND hWnd = CreateWindowW(szWindowClass, L"circle Word SoftWare Korean...", WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, 640, 700, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
@@ -111,6 +115,28 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    return TRUE;
 }
+
+
+//파일읽기 함수
+void OutFromFile(TCHAR filename[], HWND hWnd, static TCHAR *strPointer, static int* countPointer) 
+{
+    *countPointer = 0;
+    //static TCHAR str[60000] = *strPointer;
+    FILE* fPtr = nullptr;
+    HDC hdc;
+    int line;
+    line = 0;
+    hdc = GetDC(hWnd);
+#ifdef _UNICODE
+    _tfopen_s(&fPtr, filename, _T("r, ccs=  UNICODE"));
+#else
+    _tfopen_s(&fPtr, filename, _T("r"));
+#endif 
+    _fgetts(strPointer, 60000, fPtr);
+    fclose(fPtr);
+    ReleaseDC(hWnd, hdc);
+}
+
 
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -126,16 +152,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     HDC hdc;
     PAINTSTRUCT ps;
+    OPENFILENAME ofn;
     static TCHAR str[60000];
     static int count;
     static int ypos;
     RECT rect = { 0,40,1000,1000 };
+    static TCHAR filePath[200], fileName[70], questionName[70];
+    TCHAR filter[] = _T("아무파일(*.*)\0*.*\0 텍스트 파일\0*.txt;*.doc;*.hwp\0");
     switch (message)
     {
     case WM_CREATE:
         {
         count = 0;
-        ypos = 0;
+        ypos = 40;
         }
         break;
     case WM_COMMAND:
@@ -147,8 +176,65 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
+            case ID_EXIT:
+            {
+                int answer;
+                answer = MessageBox(hWnd, _T("정말로 종료하시겠습니까?"), _T("뾼차를 타고 온 최시맨과 뉵다리 馱방각하"), MB_YESNO);
+                if (answer == IDYES) {
+                    DestroyWindow(hWnd);
+                }
+                else if (answer == IDNO) {
+                    PostQuitMessage(0);
+                }
+            }
+                break;
+            case ID_NEWFILE:
+            {
+                int answer;
+                answer = MessageBox(hWnd, _T("새 문서를 작성하시겠습니까?"), _T("占쏙옙�占싹울옙�占싹마옙�"), MB_YESNO);
+                if (answer == IDYES) {
+                    PostQuitMessage(0);
+                }
+                else if (answer == IDNO) {
+                    PostQuitMessage(0);
+                }
+            }
+                break;
+            case ID_SAVEFILE:
+            {
+                int answer;
+                answer = MessageBox(hWnd, _T("현 문서를 저장하시겠습니까?"), _T("占쏙발곤�占竊잞폕옙"), MB_YESNO);
+                if (answer == IDYES) {
+                    PostQuitMessage(0);
+                }
+                else if (answer == IDNO) {
+                    PostQuitMessage(0);
+                }
+            }
+                break;
+            case ID_LOADFILE:
+            {
+                int answer;
+                memset(&ofn, 0, sizeof(OPENFILENAME));
+                ofn.lStructSize = sizeof(OPENFILENAME);
+                ofn.hwndOwner = hWnd;//핸들
+                ofn.lpstrFilter = filter;//필터
+                ofn.lpstrFile = fileName;//파일이름
+                ofn.nMaxFile = 70;//파일최대이름字수
+                ofn.lpstrInitialDir = _T(".");//열기 시 보여줄 기본폴더
+                ofn.hInstance = hInst;
+                if (GetOpenFileName(&ofn) != 0) {
+                    //_stprintf_s(fileName, _T("%s 문서를 불러오시겠습니까?"), ofn.lpstrFile);
+                    answer = MessageBox(hWnd, fileName, _T("궢귛귍귪궻귺긏긘깈깛"), MB_YESNO);
+                    if (answer == IDYES) {
+                        OutFromFile(ofn.lpstrFile, hWnd, str, &count);
+                    }
+                    else if (answer == IDNO) {
+
+                    }
+                }
+                
+            }
                 break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
@@ -179,7 +265,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
         {
             hdc = BeginPaint(hWnd, &ps);
-            TextOut(hdc, 10, 10, _T("이 쏘프트웨어는 공개입니다..., 만든누리 : MCLS,  판본1째판 0째마당"), _tcslen(_T("이 쏘프트웨어는 공개입니다..., 만든누리 : MCLS,  판본1째판 0째마당")));
+            TextOut(hdc, 10, 10, _T("이 쏘프트웨어는 공개입니다..., 만든누리 : circle,  판본 : 1째판 0째마당"), _tcslen(_T("이 쏘프트웨어는 공개입니다..., 만든누리 : MCLS,  판본1째판 0째마당")));
             DrawText(hdc, str, _tcslen(str), &rect, DT_TOP | DT_LEFT);
             /*RECT rect;
             rect.left = 20;
@@ -197,6 +283,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;      
     case WM_DESTROY:
+        HideCaret(hWnd);
+        DestroyCaret();
         PostQuitMessage(0);
         break;
     default:
