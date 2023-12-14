@@ -135,7 +135,7 @@ void OutFromFile(TCHAR filename[], HWND hWnd, static TCHAR *strPointer, static i
     _fgetts(strPointer, 60000, fPtr);
     {
         int i = 0;
-        while (strPointer[i] != 0) {
+        while (strPointer[i] != 0 ) {
             *countPointer += 1;
             i++;
         }
@@ -240,7 +240,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                     }
                 }
-                
+                InvalidateRect(hWnd, nullptr, true);
             }
                 break;
             default:
@@ -265,15 +265,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 str[count++] = wParam;
             }
             str[count] = NULL;
-            InvalidateRgn(hWnd, NULL, true);
+            InvalidateRect(hWnd, NULL, true);
             ReleaseDC(hWnd, hdc);
         }
         break;
     case WM_PAINT:
         {
             hdc = BeginPaint(hWnd, &ps);
-            TextOut(hdc, 10, 10, _T("이 쏘프트웨어는 공개입니다..., 만든누리 : circle,  판본 : 1째판 0째마당"), _tcslen(_T("이 쏘프트웨어는 공개입니다..., 만든누리 : MCLS,  판본1째판 0째마당")));
-            DrawText(hdc, str, _tcslen(str), &rect, DT_TOP | DT_LEFT);
+            TextOut(hdc, 10, 10, _T("이 쏘프트웨어는 공개입니다..., 만든누리 : circle,  판본 : 1째판 0째마당"), _tcslen(_T("이 쏘프트웨어는 공개입니다..., 만든누리 : circle,  판본1째판 0째마당")));
+            DrawText(hdc, str, _tcslen(str), &rect, DT_TOP | DT_LEFT | DT_EDITCONTROL);
             /*RECT rect;
             rect.left = 20;
             rect.top = 100;
