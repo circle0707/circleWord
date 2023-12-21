@@ -132,14 +132,17 @@ void OutFromFile(TCHAR filename[], HWND hWnd, static TCHAR *strPointer, static i
 #else
     _tfopen_s(&fPtr, filename, _T("r"));
 #endif 
-    _fgetts(strPointer, 60000, fPtr);
+    int strLine = (int)*countPointer;
+    fread(strPointer, sizeof(char), 60000, fPtr);
     {
         int i = 0;
-        while (strPointer[i] != 0 ) {
+        while (strPointer[i] != 0) {
             *countPointer += 1;
             i++;
         }
     }
+    
+    
     fclose(fPtr);
     ReleaseDC(hWnd, hdc);
 }
@@ -234,10 +237,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     //_stprintf_s(fileName, _T("%s 문서를 불러오시겠습니까?"), ofn.lpstrFile);
                     answer = MessageBox(hWnd, fileName, _T("궢귛귍귪궻귺긏긘깈깛"), MB_YESNO);
                     if (answer == IDYES) {
+                        memset(str, 0, sizeof(char) * 60000);
                         OutFromFile(ofn.lpstrFile, hWnd, str, &count);
                     }
                     else if (answer == IDNO) {
-
+                        
                     }
                 }
                 InvalidateRect(hWnd, nullptr, true);
